@@ -23,12 +23,12 @@ public class Scanner {
     private static final Pattern stringPattern = Pattern.compile("\"([^\"]*)\"");
     private static final Pattern multiCommentPattern = Pattern.compile("\\{(.*?)}", Pattern.DOTALL);
     private static final Pattern singleCommentPattern = Pattern.compile("#(.*)?");
-    private static final Pattern whitespacePattern = Pattern.compile("[\\u0020\\u000c\\u0009\\u000b]");                 // space, form feed, horizontal tab, vertical tab
+    private static final Pattern whitespacePattern = Pattern.compile("[\\u0020\\u000c\\u0009\\u000b\\u000a]");                 // space, form feed, horizontal tab, vertical tab
 
     private static final HashMap<String, Type> keywords = new HashMap<String, Type>();
 
     static {
-        keywords.put("\n", Type.NEWLINE);
+//        keywords.put("\n", Type.NEWLINE);
         keywords.put("program", Type.PROG);
         keywords.put("var", Type.VAR);
         keywords.put("const", Type.CONST);
@@ -101,8 +101,8 @@ public class Scanner {
 
         while (!input.isEmpty()) {
             boolean isValidToken =
-                    checkToken("\n", Type.NEWLINE) ||
-                            checkToken("program", Type.PROG) ||
+//                    checkToken("\n", Type.NEWLINE) ||
+                    checkToken("program", Type.PROG) ||
                             checkToken("var", Type.VAR) ||
                             checkToken("const", Type.CONST) ||
                             checkToken("type", Type.TYPE) ||
@@ -221,11 +221,11 @@ public class Scanner {
 
     private void skipWhitespacesAndComments() {
         while (input.length() > 0 && (startsWithWhiteSpace() || startsWithMultiComment() || startsWithSingleComment())) {
-            if(startsWithWhiteSpace()) {
+            if (startsWithWhiteSpace()) {
                 skipWhiteSpaces();
             }
 
-            if(startsWithSingleComment() || startsWithMultiComment()) {
+            if (startsWithSingleComment() || startsWithMultiComment()) {
                 skipComments();
             }
         }

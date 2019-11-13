@@ -2,7 +2,7 @@ package com.yumantha;
 
 public class Token {
     public static enum Type {
-        NEWLINE,
+        //        NEWLINE,
         PROG,
         VAR,
         CONST,
@@ -76,9 +76,9 @@ public class Token {
 
     @Override
     public String toString() {
-        if (t_type == Type.NEWLINE) {
-            return t_type.toString() + "(\\n)@" + line + ":" + col;
-        }
+//        if (t_type == Type.NEWLINE) {
+//            return t_type.toString() + "(\\n)@" + line + ":" + col;
+//        }
 
         return t_type.toString() + "(" + text + ")@" + line + ":" + col;
     }
