@@ -23,6 +23,7 @@ public class Scanner {
     private static final Pattern stringPattern = Pattern.compile("\"([^\"]*)\"");
     private static final Pattern multiCommentPattern = Pattern.compile("\\{(.*?)}", Pattern.DOTALL);
     private static final Pattern singleCommentPattern = Pattern.compile("#(.*)?");
+    private static final Pattern whitespacePattern = Pattern.compile("[\\u0020\\u000c\\u0009\\u000b]");                 // space, form feed, horizontal tab, vertical tab
 
     private static final HashMap<String, Type> keywords = new HashMap<String, Type>();
 
@@ -96,8 +97,7 @@ public class Scanner {
     }
 
     private void scan() {
-        skipWhiteSpaces();
-        skipComments();
+        skipWhitespacesAndComments();
 
         while (!input.isEmpty()) {
             boolean isValidToken =
@@ -165,19 +165,34 @@ public class Scanner {
                 throw new ScannerError("Cannot tokenize at line: " + line + " col: " + col);
             }
 
-            skipWhiteSpaces();
-            skipComments();
-            skipWhiteSpaces();
+            skipWhitespacesAndComments();
         }
     }
 
     private boolean isWhiteSpace(char character) {
-//        space, form feed, horizontal tab, vertical tab
-        Pattern whitespacePattern = Pattern.compile("[\\u0020\\u000c\\u0009\\u000b]");
         Matcher whitespaceMatcher = whitespacePattern.matcher(String.valueOf(character));
 
         return whitespaceMatcher.matches();
     }
+
+    private boolean startsWithSingleComment() {
+        Matcher singleCommentMatcher = singleCommentPattern.matcher(input);
+
+        return (input.startsWith("#") && singleCommentMatcher.lookingAt());
+    }
+
+    private boolean startsWithMultiComment() {
+        Matcher multiCommentMatcher = multiCommentPattern.matcher(input);
+
+        return (input.startsWith("{") && multiCommentMatcher.lookingAt());
+    }
+
+    private boolean startsWithWhiteSpace() {
+        Matcher whitespaceMatcher = whitespacePattern.matcher(input);
+
+        return (whitespaceMatcher.lookingAt());
+    }
+
 
     private void skipWhiteSpaces() {
         int i = 0;
@@ -202,6 +217,19 @@ public class Scanner {
                 consumeInput(multiCommentMatcher.end());
             }
         }
+    }
+
+    private void skipWhitespacesAndComments() {
+        while (input.length() > 0 && (startsWithWhiteSpace() || startsWithMultiComment() || startsWithSingleComment())) {
+            if(startsWithWhiteSpace()) {
+                skipWhiteSpaces();
+            }
+
+            if(startsWithSingleComment() || startsWithMultiComment()) {
+                skipComments();
+            }
+        }
+
     }
 
     private boolean checkToken(String expected, Token.Type t_type) {
