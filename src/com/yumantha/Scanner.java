@@ -23,7 +23,7 @@ public class Scanner {
     private static final Pattern stringPattern = Pattern.compile("\"([^\"]*)\"");
     private static final Pattern multiCommentPattern = Pattern.compile("\\{(.*?)}", Pattern.DOTALL);
     private static final Pattern singleCommentPattern = Pattern.compile("#(.*)?");
-    private static final Pattern whitespacePattern = Pattern.compile("[\\u0020\\u000c\\u0009\\u000b\\u000a]");                 // space, form feed, horizontal tab, vertical tab
+    private static final Pattern whitespacePattern = Pattern.compile("[\\u0020\\u000c\\u0009\\u000b\\u000a]");                 // space, form feed, horizontal tab, vertical tab, line feed (new line)
 
     private static final HashMap<String, Type> keywords = new HashMap<String, Type>();
 
