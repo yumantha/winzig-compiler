@@ -45,12 +45,12 @@ Body
 Statement
 	-> Assignment
 	-> 'output' '(' OutExp (',' OutExp)* ')'										=> "output"
-	-> 'if' Expression 'then' Statement ('else' Statement)?							=> "if"
+	-> 'if' Expression 'then' Statement ('else' Statement)?						=> "if"
 	-> 'while' Expression 'do' Statement											=> "while"
 	-> 'repeat' Statement (';' Statement)* 'until' Expression						=> "repeat"
 	-> 'for' '(' ForStat ';' ForExp ';' ForStat ')' Statement						=> "for"
-	-> 'loop' Statement (';' Statement)* 'pool'										=> "loop"
-	-> 'case' Expression 'of' Caseclauses OtherwiseClause 'end'						=> "case"
+	-> 'loop' Statement (';' Statement)* 'pool'									=> "loop"
+	-> 'case' Expression 'of' Caseclauses OtherwiseClause 'end'					=> "case"
 	-> 'read' '(' Name (',' Name)* ')'												=> "read"
 	-> 'exit'																		=> "exit"
 	-> 'return' Expression															=> "return"

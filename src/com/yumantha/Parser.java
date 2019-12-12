@@ -1,5 +1,7 @@
 package com.yumantha;
 
+import com.yumantha.errors.ParseError;
+
 import java.util.ArrayList;
 
 public class Parser {
@@ -19,8 +21,7 @@ public class Parser {
         }
     }
 
-
-    public void parseWinzig() {
+    private void parseWinzig() {
 
     }
 
@@ -130,5 +131,27 @@ public class Parser {
 
     public void parseName() {
 
+    }
+
+    private Token peekAtOffset(int offset){
+        if (inputIndex + offset < input.size()){
+            return input.get(inputIndex + offset);
+        }
+
+        return eof;
+    }
+
+    private Token peek(){
+        return peekAtOffset(0);
+    }
+
+    private void readToken(Token.Type expType) {
+        Token actualToken = peek();
+
+        if(actualToken.t_type == expType) {
+            inputIndex++;
+        } else {
+            throw new ParseError("Parse error near line: " + actualToken.line + " col: " + actualToken.col + " \nExpected " + expType);
+        }
     }
 }

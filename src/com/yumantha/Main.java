@@ -10,8 +10,9 @@ public class Main {
         String sourceCode = fileHandler.readFile("winzig_test_programs/winzig_09");
         ArrayList<Token> tokens = Scanner.scan(sourceCode);
 
-        for (Token token : tokens) {
-            System.out.println(token);
-        }
+//        for (Token token : tokens) {
+//            System.out.println(token);
+//        }
+
     }
 }
