@@ -22,10 +22,30 @@ public class Parser {
     }
 
     private void parseWinzig() {
+        Token checkToken = peek();
+
+        if(checkToken.t_type == Token.Type.PROG) {
+            readToken(Token.Type.PROG);
+            parseName();
+            readToken(Token.Type.COLON);
+            parseConsts();
+            parseTypes();
+            parseDclns();
+            parseSubProgs();
+            parseBody();
+            parseName();
+            readToken(Token.Type.DOT);
+
+            buildTree("program", 1);
+        } else {
+            throw new ParseError("Parse error near line: " + checkToken.line + " col: " + checkToken.col + " \nExpected: " + Token.Type.PROG);
+        }
 
     }
 
     public void parseConsts() {
+        Token checkToken = peek();
+
 
     }
 
@@ -153,5 +173,11 @@ public class Parser {
         } else {
             throw new ParseError("Parse error near line: " + actualToken.line + " col: " + actualToken.col + " \nExpected " + expType);
         }
+    }
+
+    private void buildTree(String ruleName, int n) {
+        System.out.println(ruleName);
+        System.out.println(n);
+        System.out.println();
     }
 }

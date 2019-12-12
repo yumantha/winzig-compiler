@@ -1,8 +1,8 @@
 Winzig
-	-> 'program' Name ':' Consts Types Dclns SubProgs Body Name '.' 				=> "program"		;
+	-> 'program' Name ':' Consts Types Dclns SubProgs Body Name '.'                 => "program"		;
 
 Consts
-    -> 'const' Const (',', Const)* ';' 												=> "consts"
+    -> 'const' Const (',', Const)* ';' 											=> "consts"
 	-> 																				=> "consts"			;
 
 Const
