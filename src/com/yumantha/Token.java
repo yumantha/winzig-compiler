@@ -66,12 +66,14 @@ public class Token {
     public final String text;
     public final int line;
     public final int col;
+    public final int endCol;
 
     public Token(Type type, String text, int line, int col) {
         this.t_type = type;
         this.text = text;
         this.line = line;
         this.col = col;
+        this.endCol = col + text.length();
     }
 
     @Override
