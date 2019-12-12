@@ -2,7 +2,7 @@ Winzig
 	-> 'program' Name ':' Consts Types Dclns SubProgs Body Name '.' 				=> "program"		;
 
 Consts
-    -> 'const' Const (',', Const)* ';' 												=> "consts"
+	-> 'const' Const list ',' ';' 													=> "consts"
 	-> 																				=> "consts"			;
 
 Const
@@ -21,7 +21,7 @@ Type
 	-> Name '=' LitList 															=> "type"			;
 
 LitList
-    -> '(' Name (',', Name)* ')' 													=> "lit"			;
+	-> '(' Name list ',' ')' 														=> "lit"			;
 
 SubProgs
 	-> Fcn*																			=> "subprogs"		;
@@ -30,28 +30,28 @@ Fcn
 	-> 'function' Name '(' Params ')' ':' Name ';' Consts Types Dclns Body Name ';' => "fcn"			;
 
 Params
-    -> Dcln (';', Dcln)*															=> "params"			;
+	-> Dcln list ';'																=> "params"			;
 
 Dclns
 	-> 'var' (Dcln ';')+															=> "dclns"
 	->																				=> "dclns"			;
 
 Dcln
-    -> Name (',' Name)* ':' Name													=> "var"			;
+	-> Name list ',' ':' Name														=> "var"			;
 
 Body
-	-> 'begin' Statement (';', Statement)* 'end' 									=> "block"			;
+	-> 'begin' Statement list ';' 'end' 											=> "block"			;
 
 Statement
 	-> Assignment
-	-> 'output' '(' OutExp (',' OutExp)* ')'										=> "output"
+	-> 'output' '(' OutExp list ',' ')'												=> "output"
 	-> 'if' Expression 'then' Statement ('else' Statement)?							=> "if"
 	-> 'while' Expression 'do' Statement											=> "while"
-	-> 'repeat' Statement (';' Statement)* 'until' Expression						=> "repeat"
+	-> 'repeat' Statement list ';' 'until' Expression								=> "repeat"
 	-> 'for' '(' ForStat ';' ForExp ';' ForStat ')' Statement						=> "for"
-	-> 'loop' Statement (';' Statement)* 'pool'										=> "loop"
+	-> 'loop' Statement list ';' 'pool'												=> "loop"
 	-> 'case' Expression 'of' Caseclauses OtherwiseClause 'end'						=> "case"
-	-> 'read' '(' Name (',' Name)* ')'												=> "read"
+	-> 'read' '(' Name list ',' ')'													=> "read"
 	-> 'exit'																		=> "exit"
 	-> 'return' Expression															=> "return"
 	-> Body
@@ -68,7 +68,7 @@ Caseclauses
 	-> (Caseclause ';')+																				;
 
 Caseclause
-	-> CaseExpression (',', CaseExpression)* ':' Statement							=> "case_clause"	;
+	-> CaseExpression list ',' ':' Statement										=> "case_clause"	;
 
 CaseExpression
 	-> ConstValue
@@ -119,7 +119,7 @@ Primary
 	-> Name
 	-> '<integer>'
 	-> '<char>'
-	-> Name '(' Expression (',' Expression)* ')'									=> "call"
+	-> Name '(' Expression list ',' ')'												=> "call"
 	-> '(' Expression ')'
 	-> 'succ' '(' Expression ')'													=> "succ"
 	-> 'pred' '(' Expression ')'													=> "pred"
