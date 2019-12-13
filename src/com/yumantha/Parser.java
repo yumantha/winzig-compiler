@@ -323,59 +323,252 @@ public class Parser {
     }
 
     public void parseOutExp() {
+//        TODO handle Expression and StringNode
 
     }
 
     public void parseStringNode() {
-
+        readToken(Token.Type.STRING);
     }
 
     public void parseCaseClauses() {
+        parseCaseClause();
+        readToken(Token.Type.SEMI_COLON);
 
+//        TODO caseclause+
     }
 
     public void parseCaseClause() {
+        parseCaseExpression();
 
+        while (currentToken.t_type == Token.Type.COMMA) {
+            readToken(Token.Type.COMMA);
+            parseCaseExpression();
+        }
+
+        readToken(Token.Type.COLON);
+        parseStatement();
+
+        buildTree("case_clause", 123);
     }
 
     public void parseCaseExpression() {
+        parseConstValue();
 
+        if (currentToken.t_type == Token.Type.CASE_DOTS) {
+            readToken(Token.Type.CASE_DOTS);
+            parseConstValue();
+
+            buildTree("..", 123);
+        }
     }
 
     public void parseOtherwiseClause() {
+        currentToken = peek();
+        if (currentToken.t_type == Token.Type.OTHERWISE) {
+            readToken(Token.Type.OTHERWISE);
+            parseStatement();
 
+            buildTree("otherwise", 123);
+        } else {
+//            TODO handle empty
+        }
     }
 
     public void parseAssignment() {
+        parseName();
 
+        if (currentToken.t_type == Token.Type.ASSIGN) {
+            readToken(Token.Type.ASSIGN);
+            parseExpression();
+
+            buildTree("assign", 123);
+
+        } else if (currentToken.t_type == Token.Type.SWAP) {
+            readToken(Token.Type.SWAP);
+            parseName();
+
+            buildTree("swap", 123);
+
+        } else {
+            throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: " + Token.Type.ASSIGN + " or " + Token.Type.SWAP);
+        }
     }
 
     public void parseForStat() {
-
+//        TODO Assignment and empty
     }
 
     public void parseForExp() {
-
+//        TODO Expression and empty
     }
 
     public void parseExpression() {
+        parseTerm();
 
+        if (currentToken.t_type == Token.Type.LESS_EQUAL_OP) {
+            readToken(Token.Type.GREATER_EQUAL_OP);
+            parseTerm();
+
+            buildTree("<=", 123);
+
+        } else if (currentToken.t_type == Token.Type.LESS_OP) {
+            readToken(Token.Type.GREATER_OP);
+            parseTerm();
+
+            buildTree("<", 123);
+
+        } else if (currentToken.t_type == Token.Type.GREATER_EQUAL_OP) {
+            readToken(Token.Type.GREATER_EQUAL_OP);
+            parseTerm();
+
+            buildTree(">=", 123);
+
+        } else if (currentToken.t_type == Token.Type.GREATER_OP) {
+            readToken(Token.Type.GREATER_OP);
+            parseTerm();
+
+            buildTree(">=", 123);
+
+        } else if (currentToken.t_type == Token.Type.EQUAL_OP) {
+            readToken(Token.Type.EQUAL_OP);
+            parseTerm();
+
+            buildTree("=", 123);
+
+        } else if (currentToken.t_type == Token.Type.NOT_EQUAL_OP) {
+            readToken(Token.Type.NOT_EQUAL_OP);
+            parseTerm();
+
+            buildTree("<>", 123);
+
+        }
     }
 
     public void parseTerm() {
+        parseFactor();
 
+        while ((currentToken.t_type == Token.Type.PLUS_OP) || (currentToken.t_type == Token.Type.MINUS_OP) || (currentToken.t_type == Token.Type.OR_OP)) {
+            if (currentToken.t_type == Token.Type.PLUS_OP) {
+                readToken(Token.Type.PLUS_OP);
+                parseFactor();
+
+                buildTree("+", 123);
+            } else if (currentToken.t_type == Token.Type.MINUS_OP) {
+                readToken(Token.Type.MINUS_OP);
+                parseFactor();
+
+                buildTree("-", 123);
+            } else if (currentToken.t_type == Token.Type.OR_OP) {
+                readToken(Token.Type.OR_OP);
+                parseFactor();
+
+                buildTree("or", 123);
+            }
+        }
     }
 
     public void parseFactor() {
+        parsePrimary();
 
+        while ((currentToken.t_type == Token.Type.MULTIPLY_OP) || (currentToken.t_type == Token.Type.DIVIDE_OP) || (currentToken.t_type == Token.Type.AND_OP) || (currentToken.t_type == Token.Type.MOD_OP)) {
+            if (currentToken.t_type == Token.Type.MULTIPLY_OP) {
+                readToken(Token.Type.MULTIPLY_OP);
+                parsePrimary();
+
+                buildTree("*", 123);
+            } else if (currentToken.t_type == Token.Type.DIVIDE_OP) {
+                readToken(Token.Type.DIVIDE_OP);
+                parsePrimary();
+
+                buildTree("/", 123);
+            } else if (currentToken.t_type == Token.Type.AND_OP) {
+                readToken(Token.Type.AND_OP);
+                parsePrimary();
+
+                buildTree("and", 123);
+            } else if (currentToken.t_type == Token.Type.MOD_OP) {
+                readToken(Token.Type.MOD_OP);
+                parsePrimary();
+
+                buildTree("mod", 123);
+            }
+        }
     }
 
     public void parsePrimary() {
+        currentToken = peek();
 
+//        TODO handle name and name exp
+        if (currentToken.t_type == Token.Type.MINUS_OP) {
+            readToken(Token.Type.MINUS_OP);
+            parsePrimary();
+
+            buildTree("-", 123);
+
+        } else if (currentToken.t_type == Token.Type.PLUS_OP) {
+            readToken(Token.Type.PLUS_OP);
+            parsePrimary();
+
+        } else if (currentToken.t_type == Token.Type.NOT_OP) {
+            readToken(Token.Type.NOT_OP);
+            parsePrimary();
+
+            buildTree("not", 123);
+
+        } else if (currentToken.t_type == Token.Type.EOF) {
+            readToken(Token.Type.EOF);
+
+            buildTree("eof", 123);
+
+        } else if (currentToken.t_type == Token.Type.INTEGER) {
+            readToken(Token.Type.INTEGER);
+
+        } else if (currentToken.t_type == Token.Type.CHAR) {
+            readToken(Token.Type.CHAR);
+
+        } else if (currentToken.t_type == Token.Type.LPAREN) {
+            readToken(Token.Type.LPAREN);
+            parseExpression();
+            readToken(Token.Type.RPAREN);
+
+        } else if (currentToken.t_type == Token.Type.SUCC) {
+            readToken(Token.Type.SUCC);
+            readToken(Token.Type.LPAREN);
+            parseExpression();
+            readToken(Token.Type.RPAREN);
+
+            buildTree("succ", 123);
+
+        } else if (currentToken.t_type == Token.Type.PRED) {
+            readToken(Token.Type.PRED);
+            readToken(Token.Type.LPAREN);
+            parseExpression();
+            readToken(Token.Type.RPAREN);
+
+            buildTree("pred", 123);
+
+        } else if (currentToken.t_type == Token.Type.CHR) {
+            readToken(Token.Type.CHR);
+            readToken(Token.Type.LPAREN);
+            parseExpression();
+            readToken(Token.Type.RPAREN);
+
+            buildTree("chr", 123);
+
+        } else if (currentToken.t_type == Token.Type.ORD) {
+            readToken(Token.Type.ORD);
+            readToken(Token.Type.LPAREN);
+            parseExpression();
+            readToken(Token.Type.RPAREN);
+
+            buildTree("ord", 123);
+
+        }
     }
 
     public void parseName() {
-
+        readToken(Token.Type.IDENTIFIER);
     }
 
     private Token peekAtOffset(int offset) {
