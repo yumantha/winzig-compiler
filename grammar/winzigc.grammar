@@ -1,46 +1,46 @@
 Winzig
-	-> 'program' Name ':' Consts Types Dclns SubProgs Body Name '.'                 => "program"		;
+	-> 'program' Name ':' Consts Types Dclns SubProgs Body Name '.'                 => "program"    ;
 
 Consts
-    -> 'const' Const (',', Const)* ';' 											=> "consts"
-	-> 																				=> "consts"			;
+    -> 'const' Const (',', Const)* ';'                                              => "consts"
+	->                                                                              => "consts"     ;
 
 Const
-	-> Name '=' ConstValue															=> "const"			;
+	-> Name '=' ConstValue                                                          => "const"      ;
 
 ConstValue
 	-> '<integer>'
 	-> '<char>'
-	-> Name																								;
+	-> Name                                                                                         ;
 
 Types
 	-> 'type' (Type ';')+ 															=> "types"
 	->																				=> "types"			;
 
 Type
-	-> Name '=' LitList 															=> "type"			;
+	-> Name '=' LitList                                                             => "type"       ;
 
 LitList
-    -> '(' Name (',', Name)* ')' 													=> "lit"			;
+    -> '(' Name (',', Name)* ')'                                                    => "lit"        ;
 
 SubProgs
 	-> Fcn*																			=> "subprogs"		;
 
 Fcn
-	-> 'function' Name '(' Params ')' ':' Name ';' Consts Types Dclns Body Name ';' => "fcn"			;
+	-> 'function' Name '(' Params ')' ':' Name ';' Consts Types Dclns Body Name ';' => "fcn"        ;
 
 Params
-    -> Dcln (';', Dcln)*															=> "params"			;
+    -> Dcln (';', Dcln)*                                                            => "params"     ;
 
 Dclns
 	-> 'var' (Dcln ';')+															=> "dclns"
 	->																				=> "dclns"			;
 
 Dcln
-    -> Name (',' Name)* ':' Name													=> "var"			;
+    -> Name (',' Name)* ':' Name                                                    => "var"        ;
 
 Body
-	-> 'begin' Statement (';', Statement)* 'end' 									=> "block"			;
+	-> 'begin' Statement (';', Statement)* 'end'                                    => "block"      ;
 
 Statement
 	-> Assignment
@@ -68,7 +68,7 @@ Caseclauses
 	-> (Caseclause ';')+																				;
 
 Caseclause
-	-> CaseExpression (',', CaseExpression)* ':' Statement							=> "case_clause"	;
+	-> CaseExpression (',', CaseExpression)* ':' Statement                          => "case_clause"    ;
 
 CaseExpression
 	-> ConstValue
