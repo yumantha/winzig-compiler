@@ -1,5 +1,6 @@
 package com.yumantha;
 
+import com.sun.xml.internal.bind.v2.TODO;
 import com.yumantha.errors.ParseError;
 
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ public class Parser {
     }
 
     private void parseWinzig() {
+        int n = 1;
+
         currentToken = peek();
 
         if (currentToken.t_type == Token.Type.PROG) {
@@ -43,7 +46,7 @@ public class Parser {
             parseName();
             readToken(Token.Type.DOT);
 
-            buildTree("program", 123);
+            buildTree("program", n);
         } else {
             throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: " + Token.Type.PROG);
         }
@@ -531,7 +534,9 @@ public class Parser {
     private void parseTerm() {
         parseFactor();
 
-        while ((currentToken.t_type == Token.Type.PLUS_OP) || (currentToken.t_type == Token.Type.MINUS_OP) || (currentToken.t_type == Token.Type.OR_OP)) {
+        while ((currentToken.t_type == Token.Type.PLUS_OP) ||
+                (currentToken.t_type == Token.Type.MINUS_OP) ||
+                (currentToken.t_type == Token.Type.OR_OP)) {
             if (currentToken.t_type == Token.Type.PLUS_OP) {
                 readToken(Token.Type.PLUS_OP);
                 parseFactor();
@@ -554,7 +559,10 @@ public class Parser {
     private void parseFactor() {
         parsePrimary();
 
-        while ((currentToken.t_type == Token.Type.MULTIPLY_OP) || (currentToken.t_type == Token.Type.DIVIDE_OP) || (currentToken.t_type == Token.Type.AND_OP) || (currentToken.t_type == Token.Type.MOD_OP)) {
+        while ((currentToken.t_type == Token.Type.MULTIPLY_OP) ||
+                (currentToken.t_type == Token.Type.DIVIDE_OP) ||
+                (currentToken.t_type == Token.Type.AND_OP) ||
+                (currentToken.t_type == Token.Type.MOD_OP)) {
             if (currentToken.t_type == Token.Type.MULTIPLY_OP) {
                 readToken(Token.Type.MULTIPLY_OP);
                 parsePrimary();
