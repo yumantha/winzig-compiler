@@ -11,10 +11,10 @@ Const
 ConstValue
 	-> '<integer>'
 	-> '<char>'
-	-> Name                                                                                         ;
+	-> Name                                                                                             ;
 
 Types
-	-> 'type' (Type ';')+ 															=> "types"
+	-> 'type' (Type ';')+                                                           => "types"
 	->                                                                              => "types"          ;
 
 Type
@@ -24,7 +24,7 @@ LitList
     -> '(' Name (',', Name)* ')'                                                    => "lit"            ;
 
 SubProgs
-	-> Fcn*																			=> "subprogs"		;
+	-> Fcn*                                                                         => "subprogs"		    ;
 
 Fcn
 	-> 'function' Name '(' Params ')' ':' Name ';' Consts Types Dclns Body Name ';' => "fcn"            ;
@@ -33,8 +33,8 @@ Params
     -> Dcln (';', Dcln)*                                                            => "params"         ;
 
 Dclns
-	-> 'var' (Dcln ';')+															=> "dclns"
-	->																				=> "dclns"			;
+	-> 'var' (Dcln ';')+                                                            => "dclns"
+	->                                                                              => "dclns"          ;
 
 Dcln
     -> Name (',' Name)* ':' Name                                                    => "var"            ;
@@ -58,14 +58,14 @@ Statement
 	->                                                                              => "<null>"         ;
 
 OutExp
-	-> Expression																	=> "integer"
-	-> StringNode																	=> "string"			;
+	-> Expression                                                                   => "integer"
+	-> StringNode                                                                   => "string"         ;
 
 StringNode
 	-> '<string>'                                                                                       ;
 
 Caseclauses
-	-> (Caseclause ';')+																				;
+	-> (Caseclause ';')+                                                                                ;
 
 Caseclause
 	-> CaseExpression (',', CaseExpression)* ':' Statement                          => "case_clause"    ;
@@ -75,7 +75,7 @@ CaseExpression
 	-> ConstValue '..' ConstValue                                                   => ".."             ;
 
 OtherwiseClause
-	-> 'otherwise' Statement 														=> "otherwise"
+	-> 'otherwise' Statement                                                        => "otherwise"
 	->                                                                                                  ;
 
 Assignment
