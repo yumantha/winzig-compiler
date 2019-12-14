@@ -5,12 +5,18 @@ import com.yumantha.errors.ParseError;
 import java.util.ArrayList;
 
 public class Parser {
+    public static void parseStatement(ArrayList<Token> input) {
+        Parser parser = new Parser(input);
+        parser.parseWinzig();
+        parser.readToken(Token.Type.EOF);
+    }
+
     private ArrayList<Token> input;
     private int inputIndex;
     private Token currentToken;
     private Token eof;
 
-    public Parser(ArrayList<Token> input) {
+    private Parser(ArrayList<Token> input) {
         this.input = input;
         this.inputIndex = 0;
 
@@ -44,7 +50,7 @@ public class Parser {
 
     }
 
-    public void parseConsts() {
+    private void parseConsts() {
         currentToken = peek();
 
         if (currentToken.t_type == Token.Type.CONST) {
@@ -64,14 +70,15 @@ public class Parser {
         }
     }
 
-    public void parseConst() {
+    private void parseConst() {
         parseName();
         readToken(Token.Type.EQUAL_OP);
         parseConstValue();
+
         buildTree("const", 123);
     }
 
-    public void parseConstValue() {
+    private void parseConstValue() {
         currentToken = peek();
 
         if (currentToken.t_type == Token.Type.INTEGER) {
@@ -83,7 +90,7 @@ public class Parser {
         }
     }
 
-    public void parseTypes() {
+    private void parseTypes() {
         currentToken = peek();
 
         if (currentToken.t_type == Token.Type.TYPE) {
@@ -102,13 +109,13 @@ public class Parser {
 
     }
 
-    public void parseType() {
+    private void parseType() {
         parseName();
         readToken(Token.Type.EQUAL_OP);
         parseLitList();
     }
 
-    public void parseLitList() {
+    private void parseLitList() {
         readToken(Token.Type.LPAREN);
         parseName();
 
@@ -122,12 +129,12 @@ public class Parser {
         buildTree("lit", 123);
     }
 
-    public void parseSubProgs() {
+    private void parseSubProgs() {
 //        TODO Fcn*
         buildTree("subprogs", 123);
     }
 
-    public void parseFcn() {
+    private void parseFcn() {
         readToken(Token.Type.FUNCTION);
         parseName();
         readToken(Token.Type.LPAREN);
@@ -146,7 +153,7 @@ public class Parser {
         buildTree("fcn", 123);
     }
 
-    public void parseParams() {
+    private void parseParams() {
         parseDcln();
 
         while (currentToken.t_type == Token.Type.SEMI_COLON) {
@@ -157,7 +164,7 @@ public class Parser {
         buildTree("params", 123);
     }
 
-    public void parseDclns() {
+    private void parseDclns() {
         currentToken = peek();
 
         if (currentToken.t_type == Token.Type.VAR) {
@@ -173,7 +180,7 @@ public class Parser {
         }
     }
 
-    public void parseDcln() {
+    private void parseDcln() {
         parseName();
 
         while (currentToken.t_type == Token.Type.COMMA) {
@@ -187,7 +194,7 @@ public class Parser {
         buildTree("var", 123);
     }
 
-    public void parseBody() {
+    private void parseBody() {
         readToken(Token.Type.BEGIN);
         parseStatement();
 
@@ -201,7 +208,7 @@ public class Parser {
         buildTree("block", 123);
     }
 
-    public void parseStatement() {
+    private void parseStatement() {
         currentToken = peek();
 
 //        TODO handle Assignment, Body
@@ -322,7 +329,7 @@ public class Parser {
 
     }
 
-    public void parseOutExp() {
+    private void parseOutExp() {
 //        TODO handle Expression and StringNode
 
     }
@@ -331,14 +338,14 @@ public class Parser {
         readToken(Token.Type.STRING);
     }
 
-    public void parseCaseClauses() {
+    private void parseCaseClauses() {
         parseCaseClause();
         readToken(Token.Type.SEMI_COLON);
 
 //        TODO caseclause+
     }
 
-    public void parseCaseClause() {
+    private void parseCaseClause() {
         parseCaseExpression();
 
         while (currentToken.t_type == Token.Type.COMMA) {
@@ -352,7 +359,7 @@ public class Parser {
         buildTree("case_clause", 123);
     }
 
-    public void parseCaseExpression() {
+    private void parseCaseExpression() {
         parseConstValue();
 
         if (currentToken.t_type == Token.Type.CASE_DOTS) {
@@ -363,19 +370,21 @@ public class Parser {
         }
     }
 
-    public void parseOtherwiseClause() {
+    private void parseOtherwiseClause() {
         currentToken = peek();
+
         if (currentToken.t_type == Token.Type.OTHERWISE) {
             readToken(Token.Type.OTHERWISE);
             parseStatement();
 
             buildTree("otherwise", 123);
+
         } else {
 //            TODO handle empty
         }
     }
 
-    public void parseAssignment() {
+    private void parseAssignment() {
         parseName();
 
         if (currentToken.t_type == Token.Type.ASSIGN) {
@@ -395,15 +404,15 @@ public class Parser {
         }
     }
 
-    public void parseForStat() {
+    private void parseForStat() {
 //        TODO Assignment and empty
     }
 
-    public void parseForExp() {
+    private void parseForExp() {
 //        TODO Expression and empty
     }
 
-    public void parseExpression() {
+    private void parseExpression() {
         parseTerm();
 
         if (currentToken.t_type == Token.Type.LESS_EQUAL_OP) {
@@ -445,7 +454,7 @@ public class Parser {
         }
     }
 
-    public void parseTerm() {
+    private void parseTerm() {
         parseFactor();
 
         while ((currentToken.t_type == Token.Type.PLUS_OP) || (currentToken.t_type == Token.Type.MINUS_OP) || (currentToken.t_type == Token.Type.OR_OP)) {
@@ -468,7 +477,7 @@ public class Parser {
         }
     }
 
-    public void parseFactor() {
+    private void parseFactor() {
         parsePrimary();
 
         while ((currentToken.t_type == Token.Type.MULTIPLY_OP) || (currentToken.t_type == Token.Type.DIVIDE_OP) || (currentToken.t_type == Token.Type.AND_OP) || (currentToken.t_type == Token.Type.MOD_OP)) {
@@ -496,7 +505,7 @@ public class Parser {
         }
     }
 
-    public void parsePrimary() {
+    private void parsePrimary() {
         currentToken = peek();
 
 //        TODO handle name and name exp
@@ -567,7 +576,7 @@ public class Parser {
         }
     }
 
-    public void parseName() {
+    private void parseName() {
         readToken(Token.Type.IDENTIFIER);
     }
 

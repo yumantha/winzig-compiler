@@ -9,6 +9,7 @@ public class Main {
         FileHandler fileHandler = new FileHandler();
         String sourceCode = fileHandler.readFile("winzig_test_programs/winzig_09");
         ArrayList<Token> tokens = Scanner.scan(sourceCode);
+        Parser.parseStatement(tokens);
 
 //        for (Token token : tokens) {
 //            System.out.println(token);
