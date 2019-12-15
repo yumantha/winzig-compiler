@@ -1,9 +1,7 @@
 package com.yumantha;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
 
 public class FileHandler {
     public String readFile(String inputPath) throws IOException {
@@ -20,5 +18,16 @@ public class FileHandler {
         }
 
         return sourceCode.toString();
+    }
+
+    public void writeAST(String filePath, ASTNode prog) throws IOException {
+        File f = new File(filePath);
+        FileWriter fw = new FileWriter(f);
+        BufferedWriter bw = new BufferedWriter(fw);
+
+        prog.writeTree(bw);
+
+        bw.close();
+        fw.close();
     }
 }

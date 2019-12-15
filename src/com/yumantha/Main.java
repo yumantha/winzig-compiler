@@ -15,9 +15,13 @@ public class Main {
 
         if (prog != null) {
             prog.inOrderTraverse();
+
+            fileHandler.writeAST("output/out.tree", prog);
         } else {
             throw new ParseError("Parse Error!");
         }
+
+
 
 
 //        for (Token token : tokens) {
