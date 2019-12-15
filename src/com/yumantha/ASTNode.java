@@ -6,20 +6,22 @@ import java.util.Collections;
 public class ASTNode {
     private String ruleName;
     private int n;
-    private int level;
     private ASTNode parent;
     private ArrayList<ASTNode> children;
 
-    public ASTNode(String ruleName, int n, int level) {
+    public ASTNode(String ruleName, int n) {
         this.ruleName = ruleName;
         this.n = n;
-        this.level = level;
         this.parent = null;
         this.children = new ArrayList<ASTNode>();
     }
 
     public void setParent(ASTNode parent) {
         this.parent = parent;
+    }
+
+    public ASTNode getParent() {
+        return this.parent;
     }
 
     public void addChild(ASTNode newChild) {
@@ -38,11 +40,24 @@ public class ASTNode {
         }
     }
 
+    private int getLevel() {
+        int level = 0;
+
+        ASTNode checkParent = this.getParent();
+
+        while (checkParent != null) {
+            checkParent = checkParent.getParent();
+            level++;
+        }
+
+        return level;
+    }
+
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
 
-        for(int i=0;i<level;i++){
+        for (int i = 0; i < getLevel(); i++) {
             str.append(". ");
         }
 
