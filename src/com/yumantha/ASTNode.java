@@ -1,5 +1,7 @@
 package com.yumantha;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -39,6 +41,16 @@ public class ASTNode {
             node.inOrderTraverse();
         }
     }
+
+    public void writeTree(BufferedWriter bw) throws IOException {
+        bw.write(this.toString());
+        bw.write("\n");
+
+        for (ASTNode node : this.children) {
+            node.writeTree(bw);
+        }
+    }
+
 
     private int getLevel() {
         int level = 0;
