@@ -102,7 +102,7 @@ public class Scanner {
         while (!input.isEmpty()) {
             boolean isValidToken =
 //                    checkToken("\n", Type.NEWLINE) ||
-                    checkKeywordIdentifier() ||
+                    checkIfIdentifier() ||
                             checkToken("program", Type.PROG) ||
                             checkToken("var", Type.VAR) ||
                             checkToken("const", Type.CONST) ||
@@ -200,7 +200,7 @@ public class Scanner {
             i++;
         }
 
-        consumeInput(i);
+        readInput(i);
     }
 
     private void skipComments() {
@@ -209,11 +209,11 @@ public class Scanner {
 
         if (input.startsWith("#")) {
             if (singleCommentMatcher.lookingAt()) {
-                consumeInput(singleCommentMatcher.end());
+                readInput(singleCommentMatcher.end());
             }
         } else if (input.startsWith("{")) {
             if (multiCommentMatcher.lookingAt()) {
-                consumeInput(multiCommentMatcher.end());
+                readInput(multiCommentMatcher.end());
             }
         }
     }
@@ -234,7 +234,7 @@ public class Scanner {
     private boolean checkToken(String expected, Token.Type t_type) {
         if (input.startsWith(expected)) {
             result.add(new Token(t_type, expected, line, col));
-            consumeInput(expected.length());
+            readInput(expected.length());
             return true;
         } else {
             return false;
@@ -246,14 +246,14 @@ public class Scanner {
 
         if (m.lookingAt()) {
             result.add(new Token(t_type, m.group(), line, col));
-            consumeInput(m.end());
+            readInput(m.end());
             return true;
         } else {
             return false;
         }
     }
 
-    private boolean checkKeywordIdentifier() {
+    private boolean checkIfIdentifier() {
         if (checkRegExp(identifierPattern, Type.IDENTIFIER)) {
             Token t = result.get(result.size() - 1);
             Token.Type t_type = keywords.get(t.text);
@@ -269,7 +269,7 @@ public class Scanner {
         }
     }
 
-    private void consumeInput(int amount) {
+    private void readInput(int amount) {
         for (int i = 0; i < amount; ++i) {
             char c = input.charAt(i);
 

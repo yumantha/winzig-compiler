@@ -38,8 +38,8 @@ public class Parser {
         this.stack = new Stack<ASTNode>();
     }
 
-    private int parseWinzig() {
-        currentToken = peek();
+    private void parseWinzig() {
+        currentToken = checkFirst();
 
         if (currentToken.t_type == Token.Type.PROG) {
             int n = 0;
@@ -56,15 +56,12 @@ public class Parser {
             readToken(Token.Type.DOT);
 
             buildTree("program", n);
-            return 1;
         } else {
             throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: " + Token.Type.PROG);
         }
     }
 
     private int parseConsts() {
-        currentToken = peek();
-
         if (currentToken.t_type == Token.Type.CONST) {
             int n = 0;
 
@@ -99,8 +96,6 @@ public class Parser {
     }
 
     private int parseConstValue() {
-        currentToken = peek();
-
         if (currentToken.t_type == Token.Type.INTEGER) {
             readToken(Token.Type.INTEGER);
             return 1;
@@ -115,8 +110,6 @@ public class Parser {
     }
 
     private int parseTypes() {
-        currentToken = peek();
-
         if (currentToken.t_type == Token.Type.TYPE) {
             int n = 0;
 
@@ -214,8 +207,6 @@ public class Parser {
     }
 
     private int parseDclns() {
-        currentToken = peek();
-
         if (currentToken.t_type == Token.Type.VAR) {
             int n = 0;
 
@@ -273,8 +264,6 @@ public class Parser {
     }
 
     private int parseStatement() {
-        currentToken = peek();
-
         if (currentToken.t_type == Token.Type.IDENTIFIER) {
             return parseAssignment();
         } else if (currentToken.t_type == Token.Type.OUTPUT) {
@@ -417,8 +406,6 @@ public class Parser {
     }
 
     private int parseOutExp() {
-        currentToken = peek();
-
         if ((currentToken.t_type == Token.Type.MINUS_OP) ||
                 (currentToken.t_type == Token.Type.PLUS_OP) ||
                 (currentToken.t_type == Token.Type.NOT_OP) ||
@@ -518,8 +505,6 @@ public class Parser {
     }
 
     private int parseOtherwiseClause() {
-        currentToken = peek();
-
         if (currentToken.t_type == Token.Type.OTHERWISE) {
             int n = 0;
 
@@ -556,8 +541,6 @@ public class Parser {
     }
 
     private int parseForStat() {
-        currentToken = peek();
-
         if (currentToken.t_type == Token.Type.IDENTIFIER) {
             return parseAssignment();
         } else {
@@ -720,8 +703,6 @@ public class Parser {
     }
 
     private int parsePrimary() {
-        currentToken = peek();
-
         if (currentToken.t_type == Token.Type.IDENTIFIER) {
             int n = 0;
 
@@ -844,20 +825,15 @@ public class Parser {
         return 1;
     }
 
-    private Token peekAtOffset(int offset) {
-        if (inputIndex + offset < input.size()) {
-            return input.get(inputIndex + offset);
+    private Token checkFirst() {
+        if (inputIndex < input.size()) {
+            return input.get(inputIndex);
         }
 
         return eof;
     }
 
-    private Token peek() {
-        return peekAtOffset(0);
-    }
-
     private void readToken(Token.Type expType) {
-//        System.out.println(currentToken);
         if (currentToken.t_type == expType) {
             if (currentToken.t_type == Token.Type.IDENTIFIER) {
                 buildTree(currentToken.text, 0);
@@ -874,7 +850,7 @@ public class Parser {
             }
 
             inputIndex++;
-            currentToken = peek();
+            currentToken = checkFirst();
         } else {
             throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected " + expType);
         }
@@ -892,6 +868,5 @@ public class Parser {
 
         node.reverseChildren();
         stack.push(node);
-//        System.out.println(stack);
     }
 }

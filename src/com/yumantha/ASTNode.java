@@ -51,7 +51,6 @@ public class ASTNode {
         }
     }
 
-
     private int getLevel() {
         int level = 0;
 
