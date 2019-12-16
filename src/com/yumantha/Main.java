@@ -1,31 +1,26 @@
 package com.yumantha;
 
-import com.yumantha.errors.ParseError;
-
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        FileHandler fileHandler = new FileHandler();
-        String sourceCode = fileHandler.readFile("winzig_test_programs/winzig_10");
-        ArrayList<Token> tokens = Scanner.scan(sourceCode);
-        ASTNode prog = Parser.parseProgram(tokens);
+        String inputPath = "winzig_test_programs/";
+        String outputPath = "output/";
 
-        if (prog != null) {
-            prog.inOrderTraverse();
+        for (int i = 1; i <= 15; i++) {
+            String iStr;
+            if (i < 10) {
+                iStr = "0" + i;
+            } else {
+                iStr = Integer.toString(i);
+            }
 
-            fileHandler.writeAST("output/out.tree", prog);
-        } else {
-            throw new ParseError("Parse Error!");
+            String inFile = inputPath + "winzig_" + iStr;
+            String outFile = outputPath + "winzig_" + iStr + ".tree";
+
+            Compiler.compile(inFile, outFile);
+            System.out.println("------------------------------------------------------------");
         }
-
-
-
-
-//        for (Token token : tokens) {
-//            System.out.println(token);
-//        }
     }
 }
