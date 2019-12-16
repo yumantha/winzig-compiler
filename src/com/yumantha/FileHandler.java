@@ -1,7 +1,6 @@
 package com.yumantha;
 
 import java.io.*;
-import java.util.ArrayList;
 
 public class FileHandler {
     public String readFile(String inputPath) throws IOException {

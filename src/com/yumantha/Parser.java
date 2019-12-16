@@ -70,12 +70,10 @@ public class Parser {
 
             readToken(Token.Type.CONST);
             n += parseConst();
-//            n += 1;
 
             while (currentToken.t_type == Token.Type.COMMA) {
                 readToken(Token.Type.COMMA);
                 n += parseConst();
-//                n += 1;
             }
 
             readToken(Token.Type.SEMI_COLON);
@@ -124,12 +122,10 @@ public class Parser {
 
             readToken(Token.Type.TYPE);
             n += parseType();
-//            n += 1;
             readToken(Token.Type.SEMI_COLON);
 
             while (currentToken.t_type == Token.Type.IDENTIFIER) {
                 n += parseType();
-//                n += 1;
                 readToken(Token.Type.SEMI_COLON);
             }
 
@@ -158,12 +154,10 @@ public class Parser {
 
         readToken(Token.Type.LPAREN);
         n += parseName();
-//        n += 1;
 
         while (currentToken.t_type == Token.Type.COMMA) {
             readToken(Token.Type.COMMA);
             n += parseName();
-//            n += 1;
         }
 
         readToken(Token.Type.RPAREN);
@@ -177,7 +171,6 @@ public class Parser {
 
         while (currentToken.t_type == Token.Type.FUNCTION) {
             n += parseFcn();
-//            n += 1;
         }
 
         buildTree("subprogs", n);
@@ -210,12 +203,10 @@ public class Parser {
         int n = 0;
 
         n += parseDcln();
-//        n += 1;
 
         while (currentToken.t_type == Token.Type.SEMI_COLON) {
             readToken(Token.Type.SEMI_COLON);
             n += parseDcln();
-//            n += 1;
         }
 
         buildTree("params", n);
@@ -230,12 +221,10 @@ public class Parser {
 
             readToken(Token.Type.VAR);
             n += parseDcln();
-//            n += 1;
             readToken(Token.Type.SEMI_COLON);
 
             while (currentToken.t_type == Token.Type.IDENTIFIER) {
                 n += parseDcln();
-//                n += 1;
                 readToken(Token.Type.SEMI_COLON);
             }
 
@@ -253,17 +242,14 @@ public class Parser {
         int n = 0;
 
         n += parseName();
-//        n += 1;
 
         while (currentToken.t_type == Token.Type.COMMA) {
             readToken(Token.Type.COMMA);
             n += parseName();
-//            n += 1;
         }
 
         readToken(Token.Type.COLON);
         n += parseName();
-//        n += 1;
 
         buildTree("var", n);
         return 1;
@@ -274,12 +260,10 @@ public class Parser {
 
         readToken(Token.Type.BEGIN);
         n += parseStatement();
-//        n += 1;
 
         while (currentToken.t_type == Token.Type.SEMI_COLON) {
             readToken(Token.Type.SEMI_COLON);
             n += parseStatement();
-//            n += 1;
         }
 
         readToken(Token.Type.END);
@@ -299,12 +283,10 @@ public class Parser {
             readToken(Token.Type.OUTPUT);
             readToken(Token.Type.LPAREN);
             n += parseOutExp();
-//            n += 1;
 
             while (currentToken.t_type == Token.Type.COMMA) {
                 readToken(Token.Type.COMMA);
                 n += parseOutExp();
-//                n += 1;
             }
 
             readToken(Token.Type.RPAREN);
@@ -316,15 +298,12 @@ public class Parser {
 
             readToken(Token.Type.IF);
             n += parseExpression();
-//            n += 1;
             readToken(Token.Type.THEN);
             n += parseStatement();
-//            n += 1;
 
             if (currentToken.t_type == Token.Type.ELSE) {
                 readToken(Token.Type.ELSE);
                 n += parseStatement();
-//                n += 1;
             }
 
             buildTree("if", n);
@@ -344,17 +323,14 @@ public class Parser {
 
             readToken(Token.Type.REPEAT);
             n += parseStatement();
-//            n += 1;
 
             while (currentToken.t_type == Token.Type.SEMI_COLON) {
                 readToken(Token.Type.SEMI_COLON);
                 n += parseStatement();
-//                n += 1;
             }
 
             readToken(Token.Type.UNTIL);
             n += parseExpression();
-//            n += 1;
 
             buildTree("repeat", n);
             return 1;
@@ -378,12 +354,10 @@ public class Parser {
 
             readToken(Token.Type.LOOP);
             n += parseStatement();
-//            n += 1;
 
             while (currentToken.t_type == Token.Type.SEMI_COLON) {
                 readToken(Token.Type.SEMI_COLON);
                 n += parseStatement();
-//                n += 1;
             }
 
             readToken(Token.Type.POOL);
@@ -408,12 +382,10 @@ public class Parser {
             readToken(Token.Type.READ);
             readToken(Token.Type.LPAREN);
             n += parseName();
-//            n += 1;
 
             while (currentToken.t_type == Token.Type.COMMA) {
                 readToken(Token.Type.COMMA);
                 n += parseName();
-//                n += 1;
             }
 
             readToken(Token.Type.RPAREN);
@@ -516,17 +488,14 @@ public class Parser {
         int n = 0;
 
         n += parseCaseExpression();
-//        n += 1;
 
         while (currentToken.t_type == Token.Type.COMMA) {
             readToken(Token.Type.COMMA);
             n += parseCaseExpression();
-//            n += 1;
         }
 
         readToken(Token.Type.COLON);
         n += parseStatement();
-//        n += 1;
 
         buildTree("case_clause", n);
         return 1;
@@ -684,9 +653,6 @@ public class Parser {
         } else {
             return n;
         }
-
-
-//        return n;
     }
 
     private void parseTermInternal(int n) {
@@ -695,21 +661,17 @@ public class Parser {
             n += parseFactor();
 
             buildTree("+", n);
-//            return 1;
         } else if (currentToken.t_type == Token.Type.MINUS_OP) {
             readToken(Token.Type.MINUS_OP);
             n += parseFactor();
 
             buildTree("-", n);
-//            return 1;
         } else if (currentToken.t_type == Token.Type.OR_OP) {
             readToken(Token.Type.OR_OP);
             n += parseFactor();
 
             buildTree("or", n);
-//            return 1;
         }
-//        return 0;
     }
 
     private int parseFactor() {
@@ -731,7 +693,6 @@ public class Parser {
         } else {
             return n;
         }
-
     }
 
     private void parseFactorInternal(int n) {
@@ -740,25 +701,21 @@ public class Parser {
             n += parsePrimary();
 
             buildTree("*", n);
-//            return 1;
         } else if (currentToken.t_type == Token.Type.DIVIDE_OP) {
             readToken(Token.Type.DIVIDE_OP);
             n += parsePrimary();
 
             buildTree("/", n);
-//            return 1;
         } else if (currentToken.t_type == Token.Type.AND_OP) {
             readToken(Token.Type.AND_OP);
             n += parsePrimary();
 
             buildTree("and", n);
-//            return 1;
         } else if (currentToken.t_type == Token.Type.MOD_OP) {
             readToken(Token.Type.MOD_OP);
             n += parsePrimary();
 
             buildTree("mod", n);
-//            return 1;
         }
     }
 
@@ -769,17 +726,14 @@ public class Parser {
             int n = 0;
 
             n += parseName();
-//            n += 1;
 
             if (currentToken.t_type == Token.Type.LPAREN) {
                 readToken(Token.Type.LPAREN);
                 n += parseExpression();
-//                n += 1;
 
                 while (currentToken.t_type == Token.Type.COMMA) {
                     readToken(Token.Type.COMMA);
                     n += parseExpression();
-//                    n += 1;
                 }
 
                 readToken(Token.Type.RPAREN);
@@ -900,11 +854,10 @@ public class Parser {
 
     private Token peek() {
         return peekAtOffset(0);
-//        return input.get(inputIndex);
     }
 
     private void readToken(Token.Type expType) {
-        System.out.println(currentToken);
+//        System.out.println(currentToken);
         if (currentToken.t_type == expType) {
             if (currentToken.t_type == Token.Type.IDENTIFIER) {
                 buildTree(currentToken.text, 0);
@@ -939,7 +892,6 @@ public class Parser {
 
         node.reverseChildren();
         stack.push(node);
-
-        System.out.println(stack);
+//        System.out.println(stack);
     }
 }
