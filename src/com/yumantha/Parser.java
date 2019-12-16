@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 public class Parser {
-    public static ASTNode parseProgram(ArrayList<Token> input) {
+    public static ASTNode parseWinzig(ArrayList<Token> input) {
         Parser parser = new Parser(input);
         parser.parseWinzig();
         parser.readToken(Token.Type.EOF);
@@ -38,363 +38,413 @@ public class Parser {
         this.stack = new Stack<ASTNode>();
     }
 
-    private void parseWinzig() {
+    private int parseWinzig() {
         currentToken = peek();
 
         if (currentToken.t_type == Token.Type.PROG) {
+            int n = 0;
+
             readToken(Token.Type.PROG);
-            parseName();
+            n += parseName();
             readToken(Token.Type.COLON);
-            parseConsts();
-            parseTypes();
-            parseDclns();
-            parseSubProgs();
-            parseBody();
-            parseName();
+            n += parseConsts();
+            n += parseTypes();
+            n += parseDclns();
+            n += parseSubProgs();
+            n += parseBody();
+            n += parseName();
             readToken(Token.Type.DOT);
 
-            buildTree("program", 7);
+            buildTree("program", n);
+            return 1;
         } else {
             throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: " + Token.Type.PROG);
         }
-
     }
 
-    private void parseConsts() {
+    private int parseConsts() {
         currentToken = peek();
 
         if (currentToken.t_type == Token.Type.CONST) {
             int n = 0;
 
             readToken(Token.Type.CONST);
-            parseConst();
-            n += 1;
+            n += parseConst();
+//            n += 1;
 
             while (currentToken.t_type == Token.Type.COMMA) {
                 readToken(Token.Type.COMMA);
-                parseConst();
-                n += 1;
+                n += parseConst();
+//                n += 1;
             }
 
             readToken(Token.Type.SEMI_COLON);
 
             buildTree("consts", n);
         } else {
-            buildTree("consts", 0);
+            int n = 0;
+
+            buildTree("consts", n);
         }
+        return 1;
     }
 
-    private void parseConst() {
-        parseName();
+    private int parseConst() {
+        int n = 0;
+
+        n += parseName();
         readToken(Token.Type.EQUAL_OP);
-        parseConstValue();
+        n += parseConstValue();
 
-        buildTree("const", 2);
+        buildTree("const", n);
+        return 1;
     }
 
-    private void parseConstValue() {
+    private int parseConstValue() {
         currentToken = peek();
 
         if (currentToken.t_type == Token.Type.INTEGER) {
             readToken(Token.Type.INTEGER);
+            return 1;
         } else if (currentToken.t_type == Token.Type.CHAR) {
             readToken(Token.Type.CHAR);
+            return 1;
         } else if (currentToken.t_type == Token.Type.IDENTIFIER) {
-            parseName();
+            return parseName();
         } else {
             throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: " + Token.Type.INTEGER + ", " + Token.Type.CHAR + " or " + Token.Type.IDENTIFIER);
         }
     }
 
-    private void parseTypes() {
+    private int parseTypes() {
         currentToken = peek();
 
         if (currentToken.t_type == Token.Type.TYPE) {
             int n = 0;
 
             readToken(Token.Type.TYPE);
-            parseType();
-            n += 1;
+            n += parseType();
+//            n += 1;
             readToken(Token.Type.SEMI_COLON);
 
             while (currentToken.t_type == Token.Type.IDENTIFIER) {
-                parseType();
-                n += 1;
+                n += parseType();
+//                n += 1;
                 readToken(Token.Type.SEMI_COLON);
             }
 
             buildTree("types", n);
         } else {
-            buildTree("types", 0);
+            int n = 0;
+            buildTree("types", n);
         }
+
+        return 1;
     }
 
-    private void parseType() {
-        parseName();
+    private int parseType() {
+        int n = 0;
+
+        n += parseName();
         readToken(Token.Type.EQUAL_OP);
-        parseLitList();
+        n += parseLitList();
 
-        buildTree("type", 2);
+        buildTree("type", n);
+        return 1;
     }
 
-    private void parseLitList() {
+    private int parseLitList() {
         int n = 0;
 
         readToken(Token.Type.LPAREN);
-        parseName();
-        n += 1;
+        n += parseName();
+//        n += 1;
 
         while (currentToken.t_type == Token.Type.COMMA) {
             readToken(Token.Type.COMMA);
-            parseName();
-            n += 1;
+            n += parseName();
+//            n += 1;
         }
 
         readToken(Token.Type.RPAREN);
 
         buildTree("lit", n);
+        return 1;
     }
 
-    private void parseSubProgs() {
+    private int parseSubProgs() {
         int n = 0;
 
         while (currentToken.t_type == Token.Type.FUNCTION) {
-            parseFcn();
-            n += 1;
+            n += parseFcn();
+//            n += 1;
         }
 
         buildTree("subprogs", n);
+        return 1;
     }
 
-    private void parseFcn() {
-        readToken(Token.Type.FUNCTION);
-        parseName();
-        readToken(Token.Type.LPAREN);
-        parseParams();
-        readToken(Token.Type.RPAREN);
-        readToken(Token.Type.COLON);
-        parseName();
-        readToken(Token.Type.SEMI_COLON);
-        parseConsts();
-        parseTypes();
-        parseDclns();
-        parseBody();
-        parseName();
-        readToken(Token.Type.SEMI_COLON);
-
-        buildTree("fcn", 8);
-    }
-
-    private void parseParams() {
+    private int parseFcn() {
         int n = 0;
 
-        parseDcln();
-        n += 1;
+        readToken(Token.Type.FUNCTION);
+        n += parseName();
+        readToken(Token.Type.LPAREN);
+        n += parseParams();
+        readToken(Token.Type.RPAREN);
+        readToken(Token.Type.COLON);
+        n += parseName();
+        readToken(Token.Type.SEMI_COLON);
+        n += parseConsts();
+        n += parseTypes();
+        n += parseDclns();
+        n += parseBody();
+        n += parseName();
+        readToken(Token.Type.SEMI_COLON);
+
+        buildTree("fcn", n);
+        return 1;
+    }
+
+    private int parseParams() {
+        int n = 0;
+
+        n += parseDcln();
+//        n += 1;
 
         while (currentToken.t_type == Token.Type.SEMI_COLON) {
             readToken(Token.Type.SEMI_COLON);
-            parseDcln();
-            n += 1;
+            n += parseDcln();
+//            n += 1;
         }
 
         buildTree("params", n);
+        return 1;
     }
 
-    private void parseDclns() {
+    private int parseDclns() {
         currentToken = peek();
 
         if (currentToken.t_type == Token.Type.VAR) {
             int n = 0;
 
             readToken(Token.Type.VAR);
-            parseDcln();
-            n += 1;
+            n += parseDcln();
+//            n += 1;
             readToken(Token.Type.SEMI_COLON);
 
             while (currentToken.t_type == Token.Type.IDENTIFIER) {
-                parseDcln();
-                n += 1;
+                n += parseDcln();
+//                n += 1;
                 readToken(Token.Type.SEMI_COLON);
             }
 
             buildTree("dclns", n);
         } else {
-            buildTree("dclns", 0);
+            int n = 0;
+
+            buildTree("dclns", n);
         }
+
+        return 1;
     }
 
-    private void parseDcln() {
+    private int parseDcln() {
         int n = 0;
 
-        parseName();
-        n += 1;
+        n += parseName();
+//        n += 1;
 
         while (currentToken.t_type == Token.Type.COMMA) {
             readToken(Token.Type.COMMA);
-            parseName();
-            n += 1;
+            n += parseName();
+//            n += 1;
         }
 
         readToken(Token.Type.COLON);
-        parseName();
-        n += 1;
+        n += parseName();
+//        n += 1;
 
         buildTree("var", n);
+        return 1;
     }
 
-    private void parseBody() {
+    private int parseBody() {
         int n = 0;
 
         readToken(Token.Type.BEGIN);
-        parseProgram();
-        n += 1;
+        n += parseStatement();
+//        n += 1;
 
         while (currentToken.t_type == Token.Type.SEMI_COLON) {
             readToken(Token.Type.SEMI_COLON);
-            parseProgram();
-            n += 1;
+            n += parseStatement();
+//            n += 1;
         }
 
         readToken(Token.Type.END);
 
         buildTree("block", n);
+        return 1;
     }
 
-    private void parseProgram() {
+    private int parseStatement() {
         currentToken = peek();
 
         if (currentToken.t_type == Token.Type.IDENTIFIER) {
-            parseAssignment();
+            return parseAssignment();
         } else if (currentToken.t_type == Token.Type.OUTPUT) {
             int n = 0;
 
             readToken(Token.Type.OUTPUT);
             readToken(Token.Type.LPAREN);
-            parseOutExp();
-            n += 1;
+            n += parseOutExp();
+//            n += 1;
 
             while (currentToken.t_type == Token.Type.COMMA) {
                 readToken(Token.Type.COMMA);
-                parseOutExp();
-                n += 1;
+                n += parseOutExp();
+//                n += 1;
             }
 
             readToken(Token.Type.RPAREN);
 
             buildTree("output", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.IF) {
             int n = 0;
 
             readToken(Token.Type.IF);
-            parseExpression();
-            n += 1;
+            n += parseExpression();
+//            n += 1;
             readToken(Token.Type.THEN);
-            parseProgram();
-            n += 1;
+            n += parseStatement();
+//            n += 1;
 
             if (currentToken.t_type == Token.Type.ELSE) {
                 readToken(Token.Type.ELSE);
-                parseProgram();
-                n += 1;
+                n += parseStatement();
+//                n += 1;
             }
 
             buildTree("if", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.WHILE) {
-            readToken(Token.Type.WHILE);
-            parseExpression();
-            readToken(Token.Type.DO);
-            parseProgram();
+            int n = 0;
 
-            buildTree("while", 2);
+            readToken(Token.Type.WHILE);
+            n += parseExpression();
+            readToken(Token.Type.DO);
+            n += parseStatement();
+
+            buildTree("while", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.REPEAT) {
             int n = 0;
 
             readToken(Token.Type.REPEAT);
-            parseProgram();
-            n += 1;
+            n += parseStatement();
+//            n += 1;
 
             while (currentToken.t_type == Token.Type.SEMI_COLON) {
                 readToken(Token.Type.SEMI_COLON);
-                parseProgram();
-                n += 1;
+                n += parseStatement();
+//                n += 1;
             }
 
             readToken(Token.Type.UNTIL);
-            parseExpression();
-            n += 1;
+            n += parseExpression();
+//            n += 1;
 
             buildTree("repeat", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.FOR) {
+            int n = 0;
+
             readToken(Token.Type.FOR);
             readToken(Token.Type.LPAREN);
-            parseForStat();
+            n += parseForStat();
             readToken(Token.Type.SEMI_COLON);
-            parseForExp();
+            n += parseForExp();
             readToken(Token.Type.SEMI_COLON);
-            parseForStat();
+            n += parseForStat();
             readToken(Token.Type.RPAREN);
-            parseProgram();
+            n += parseStatement();
 
-            buildTree("for", 4);
+            buildTree("for", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.LOOP) {
             int n = 0;
 
             readToken(Token.Type.LOOP);
-            parseProgram();
-            n += 1;
+            n += parseStatement();
+//            n += 1;
 
             while (currentToken.t_type == Token.Type.SEMI_COLON) {
                 readToken(Token.Type.SEMI_COLON);
-                parseProgram();
-                n += 1;
+                n += parseStatement();
+//                n += 1;
             }
 
             readToken(Token.Type.POOL);
 
             buildTree("loop", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.CASE) {
+            int n = 0;
+
             readToken(Token.Type.CASE);
-            parseExpression();
+            n += parseExpression();
             readToken(Token.Type.OF);
-            parseCaseClauses();
-            parseOtherwiseClause();
+            n += parseCaseClauses();
+            n += parseOtherwiseClause();
             readToken(Token.Type.END);
 
-            buildTree("case", 3);
+            buildTree("case", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.READ) {
             int n = 0;
 
             readToken(Token.Type.READ);
             readToken(Token.Type.LPAREN);
-            parseName();
-            n += 1;
+            n += parseName();
+//            n += 1;
 
             while (currentToken.t_type == Token.Type.COMMA) {
                 readToken(Token.Type.COMMA);
-                parseName();
-                n += 1;
+                n += parseName();
+//                n += 1;
             }
 
             readToken(Token.Type.RPAREN);
 
             buildTree("read", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.EXIT) {
+            int n = 0;
+
             readToken(Token.Type.EXIT);
 
-            buildTree("exit", 0);
+            buildTree("exit", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.RETURN) {
-            readToken(Token.Type.RETURN);
-            parseExpression();
+            int n = 0;
 
-            buildTree("return", 1);
+            readToken(Token.Type.RETURN);
+            n += parseExpression();
+
+            buildTree("return", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.BEGIN) {
-            parseBody();
+            return parseBody();
         } else {
-            buildTree("<null>", 0);
+            int n = 0;
+            buildTree("<null>", n);
+            return 1;
         }
     }
 
-    private void parseOutExp() {
+    private int parseOutExp() {
         currentToken = peek();
 
         if ((currentToken.t_type == Token.Type.MINUS_OP) ||
@@ -409,13 +459,19 @@ public class Parser {
                 (currentToken.t_type == Token.Type.PRED) ||
                 (currentToken.t_type == Token.Type.CHR) ||
                 (currentToken.t_type == Token.Type.ORD)) {
-            parseExpression();
+            int n = 0;
 
-            buildTree("integer", 1);
+            n += parseExpression();
+
+            buildTree("integer", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.STRING) {
-            parseStringNode();
+            int n = 0;
 
-            buildTree("string", 1);
+            n += parseStringNode();
+
+            buildTree("string", n);
+            return 1;
         } else {
             throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: "
                     + Token.Type.MINUS_OP + ", "
@@ -435,92 +491,115 @@ public class Parser {
         }
     }
 
-    private void parseStringNode() {
+    private int parseStringNode() {
         readToken(Token.Type.STRING);
+        return 1;
     }
 
-    private void parseCaseClauses() {
-        parseCaseClause();
+    private int parseCaseClauses() {
+        int n = 0;
+
+        n += parseCaseClause();
         readToken(Token.Type.SEMI_COLON);
 
         while ((currentToken.t_type == Token.Type.INTEGER) ||
                 (currentToken.t_type == Token.Type.CHAR) ||
                 (currentToken.t_type == Token.Type.IDENTIFIER)) {
-            parseCaseClause();
+            n += parseCaseClause();
             readToken(Token.Type.SEMI_COLON);
         }
+
+        return n;
     }
 
-    private void parseCaseClause() {
+    private int parseCaseClause() {
         int n = 0;
 
-        parseCaseExpression();
-        n += 1;
+        n += parseCaseExpression();
+//        n += 1;
 
         while (currentToken.t_type == Token.Type.COMMA) {
             readToken(Token.Type.COMMA);
-            parseCaseExpression();
-            n += 1;
+            n += parseCaseExpression();
+//            n += 1;
         }
 
         readToken(Token.Type.COLON);
-        parseProgram();
-        n += 1;
+        n += parseStatement();
+//        n += 1;
 
         buildTree("case_clause", n);
+        return 1;
     }
 
-    private void parseCaseExpression() {
-        parseConstValue();
+    private int parseCaseExpression() {
+        int n = 0;
+
+        n += parseConstValue();
 
         if (currentToken.t_type == Token.Type.CASE_DOTS) {
             readToken(Token.Type.CASE_DOTS);
-            parseConstValue();
+            n += parseConstValue();
 
-            buildTree("..", 2);
+            buildTree("..", n);
+            return 1;
         }
+
+        return n;
     }
 
-    private void parseOtherwiseClause() {
+    private int parseOtherwiseClause() {
         currentToken = peek();
 
         if (currentToken.t_type == Token.Type.OTHERWISE) {
-            readToken(Token.Type.OTHERWISE);
-            parseProgram();
+            int n = 0;
 
-            buildTree("otherwise", 1);
+            readToken(Token.Type.OTHERWISE);
+            n += parseStatement();
+
+            buildTree("otherwise", n);
+            return 1;
         }
+
+        return 0;
     }
 
-    private void parseAssignment() {
-        parseName();
+    private int parseAssignment() {
+        int n = 0;
+
+        n += parseName();
 
         if (currentToken.t_type == Token.Type.ASSIGN) {
             readToken(Token.Type.ASSIGN);
-            parseExpression();
+            n += parseExpression();
 
-            buildTree("assign", 2);
+            buildTree("assign", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.SWAP) {
             readToken(Token.Type.SWAP);
-            parseName();
+            n += parseName();
 
-            buildTree("swap", 2);
+            buildTree("swap", n);
+            return 1;
         } else {
             throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: " + Token.Type.ASSIGN + " or " + Token.Type.SWAP);
         }
     }
 
-    private void parseForStat() {
+    private int parseForStat() {
         currentToken = peek();
 
         if (currentToken.t_type == Token.Type.IDENTIFIER) {
-            parseAssignment();
+            return parseAssignment();
         } else {
-            buildTree("<null>", 0);
+            int n = 0;
+
+            buildTree("<null>", n);
+            return 1;
         }
     }
 
-    private void parseForExp() {
+    private int parseForExp() {
         if ((currentToken.t_type == Token.Type.MINUS_OP) ||
                 (currentToken.t_type == Token.Type.PLUS_OP) ||
                 (currentToken.t_type == Token.Type.NOT_OP) ||
@@ -533,75 +612,97 @@ public class Parser {
                 (currentToken.t_type == Token.Type.PRED) ||
                 (currentToken.t_type == Token.Type.CHR) ||
                 (currentToken.t_type == Token.Type.ORD)) {
-            parseExpression();
+            return parseExpression();
         } else {
-            buildTree("true", 0);
+            int n = 0;
+
+            buildTree("true", n);
+            return 1;
         }
     }
 
-    private void parseExpression() {
-        parseTerm();
+    private int parseExpression() {
+        int n = 0;
+
+        n += parseTerm();
 
         if (currentToken.t_type == Token.Type.LESS_EQUAL_OP) {
-            readToken(Token.Type.GREATER_EQUAL_OP);
-            parseTerm();
+            readToken(Token.Type.LESS_EQUAL_OP);
+            n += parseTerm();
 
-            buildTree("<=", 2);
+            buildTree("<=", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.LESS_OP) {
-            readToken(Token.Type.GREATER_OP);
-            parseTerm();
+            readToken(Token.Type.LESS_OP);
+            n += parseTerm();
 
-            buildTree("<", 2);
+            buildTree("<", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.GREATER_EQUAL_OP) {
             readToken(Token.Type.GREATER_EQUAL_OP);
-            parseTerm();
+            n += parseTerm();
 
-            buildTree(">=", 2);
+            buildTree(">=", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.GREATER_OP) {
             readToken(Token.Type.GREATER_OP);
-            parseTerm();
+            n += parseTerm();
 
-            buildTree(">=", 2);
+            buildTree(">", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.EQUAL_OP) {
             readToken(Token.Type.EQUAL_OP);
-            parseTerm();
+            n += parseTerm();
 
-            buildTree("=", 2);
+            buildTree("=", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.NOT_EQUAL_OP) {
             readToken(Token.Type.NOT_EQUAL_OP);
-            parseTerm();
+            n += parseTerm();
 
-            buildTree("<>", 2);
+            buildTree("<>", n);
+            return 1;
         }
+
+        return n;
     }
 
-    private void parseTerm() {
-        parseFactor();
+    private int parseTerm() {
+        int n = 0;
+
+        n += parseFactor();
 
         while ((currentToken.t_type == Token.Type.PLUS_OP) ||
                 (currentToken.t_type == Token.Type.MINUS_OP) ||
                 (currentToken.t_type == Token.Type.OR_OP)) {
             if (currentToken.t_type == Token.Type.PLUS_OP) {
                 readToken(Token.Type.PLUS_OP);
-                parseFactor();
+                n += parseFactor();
 
-                buildTree("+", 2);
+                buildTree("+", n);
+                return 1;
             } else if (currentToken.t_type == Token.Type.MINUS_OP) {
                 readToken(Token.Type.MINUS_OP);
-                parseFactor();
+                n += parseFactor();
 
-                buildTree("-", 2);
+                buildTree("-", n);
+                return 1;
             } else if (currentToken.t_type == Token.Type.OR_OP) {
                 readToken(Token.Type.OR_OP);
-                parseFactor();
+                n += parseFactor();
 
-                buildTree("or", 2);
+                buildTree("or", n);
+                return 1;
             }
         }
+
+        return n;
     }
 
-    private void parseFactor() {
-        parsePrimary();
+    private int parseFactor() {
+        int n = 0;
+
+        n += parsePrimary();
 
         while ((currentToken.t_type == Token.Type.MULTIPLY_OP) ||
                 (currentToken.t_type == Token.Type.DIVIDE_OP) ||
@@ -609,110 +710,160 @@ public class Parser {
                 (currentToken.t_type == Token.Type.MOD_OP)) {
             if (currentToken.t_type == Token.Type.MULTIPLY_OP) {
                 readToken(Token.Type.MULTIPLY_OP);
-                parsePrimary();
+                n += parsePrimary();
 
-                buildTree("*", 2);
+                buildTree("*", n);
+                return 1;
             } else if (currentToken.t_type == Token.Type.DIVIDE_OP) {
                 readToken(Token.Type.DIVIDE_OP);
-                parsePrimary();
+                n += parsePrimary();
 
-                buildTree("/", 2);
+                buildTree("/", n);
+                return 1;
             } else if (currentToken.t_type == Token.Type.AND_OP) {
                 readToken(Token.Type.AND_OP);
-                parsePrimary();
+                n += parsePrimary();
 
-                buildTree("and", 2);
+                buildTree("and", n);
+                return 1;
             } else if (currentToken.t_type == Token.Type.MOD_OP) {
                 readToken(Token.Type.MOD_OP);
-                parsePrimary();
+                n += parsePrimary();
 
-                buildTree("mod", 2);
+                buildTree("mod", n);
+                return 1;
             }
         }
+
+        return n;
     }
 
-    private void parsePrimary() {
+    private int parsePrimary() {
         currentToken = peek();
 
         if (currentToken.t_type == Token.Type.IDENTIFIER) {
             int n = 0;
 
-            parseName();
-            n += 1;
+            n += parseName();
+//            n += 1;
 
             if (currentToken.t_type == Token.Type.LPAREN) {
                 readToken(Token.Type.LPAREN);
-                parseExpression();
-                n += 1;
+                n+=parseExpression();
+//                n += 1;
 
                 while (currentToken.t_type == Token.Type.COMMA) {
                     readToken(Token.Type.COMMA);
-                    parseExpression();
-                    n += 1;
+                    n+=parseExpression();
+//                    n += 1;
                 }
 
                 readToken(Token.Type.RPAREN);
 
                 buildTree("call", n);
+                return 1;
             }
+            return n;
         } else if (currentToken.t_type == Token.Type.MINUS_OP) {
-            readToken(Token.Type.MINUS_OP);
-            parsePrimary();
+            int n = 0;
 
-            buildTree("-", 1);
+            readToken(Token.Type.MINUS_OP);
+            n += parsePrimary();
+
+            buildTree("-", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.PLUS_OP) {
             readToken(Token.Type.PLUS_OP);
-            parsePrimary();
+            return parsePrimary();
         } else if (currentToken.t_type == Token.Type.NOT_OP) {
-            readToken(Token.Type.NOT_OP);
-            parsePrimary();
+            int n = 0;
 
-            buildTree("not", 1);
+            readToken(Token.Type.NOT_OP);
+            n += parsePrimary();
+
+            buildTree("not", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.EOF) {
+            int n = 0;
+
             readToken(Token.Type.EOF);
 
-            buildTree("eof", 0);
+            buildTree("eof", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.INTEGER) {
             readToken(Token.Type.INTEGER);
+            return 1;
         } else if (currentToken.t_type == Token.Type.CHAR) {
             readToken(Token.Type.CHAR);
+            return 1;
         } else if (currentToken.t_type == Token.Type.LPAREN) {
+            int n = 0;
+
             readToken(Token.Type.LPAREN);
-            parseExpression();
+            n += parseExpression();
             readToken(Token.Type.RPAREN);
+            return n;
         } else if (currentToken.t_type == Token.Type.SUCC) {
+            int n = 0;
+
             readToken(Token.Type.SUCC);
             readToken(Token.Type.LPAREN);
-            parseExpression();
+            n += parseExpression();
             readToken(Token.Type.RPAREN);
 
-            buildTree("succ", 1);
+            buildTree("succ", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.PRED) {
+            int n = 0;
+
             readToken(Token.Type.PRED);
             readToken(Token.Type.LPAREN);
-            parseExpression();
+            n += parseExpression();
             readToken(Token.Type.RPAREN);
 
-            buildTree("pred", 1);
+            buildTree("pred", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.CHR) {
+            int n = 0;
+
             readToken(Token.Type.CHR);
             readToken(Token.Type.LPAREN);
-            parseExpression();
+            n += parseExpression();
             readToken(Token.Type.RPAREN);
 
-            buildTree("chr", 1);
+            buildTree("chr", n);
+            return 1;
         } else if (currentToken.t_type == Token.Type.ORD) {
+            int n = 0;
+
             readToken(Token.Type.ORD);
             readToken(Token.Type.LPAREN);
-            parseExpression();
+            n += parseExpression();
             readToken(Token.Type.RPAREN);
 
-            buildTree("ord", 1);
+            buildTree("ord", n);
+            return 1;
+        } else {
+            throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: "
+                    + Token.Type.MINUS_OP + ", "
+                    + Token.Type.PLUS_OP + ", "
+                    + Token.Type.NOT_OP + ", "
+                    + Token.Type.EOF + ", "
+                    + Token.Type.IDENTIFIER + ", "
+                    + Token.Type.INTEGER + ", "
+                    + Token.Type.CHAR + ", "
+                    + Token.Type.LPAREN + ", "
+                    + Token.Type.SUCC + ", "
+                    + Token.Type.PRED + ", "
+                    + Token.Type.CHR + " or "
+                    + Token.Type.ORD
+            );
         }
     }
 
-    private void parseName() {
+    private int parseName() {
         readToken(Token.Type.IDENTIFIER);
+        return 1;
     }
 
     private Token peekAtOffset(int offset) {
@@ -725,6 +876,7 @@ public class Parser {
 
     private Token peek() {
         return peekAtOffset(0);
+//        return input.get(inputIndex);
     }
 
     private void readToken(Token.Type expType) {
@@ -762,5 +914,7 @@ public class Parser {
 
         node.reverseChildren();
         stack.push(node);
+
+        System.out.println(stack);
     }
 }
