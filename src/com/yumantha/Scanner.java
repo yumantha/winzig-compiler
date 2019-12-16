@@ -102,7 +102,8 @@ public class Scanner {
         while (!input.isEmpty()) {
             boolean isValidToken =
 //                    checkToken("\n", Type.NEWLINE) ||
-                    checkToken("program", Type.PROG) ||
+                    checkKeywordIdentifier() ||
+                            checkToken("program", Type.PROG) ||
                             checkToken("var", Type.VAR) ||
                             checkToken("const", Type.CONST) ||
                             checkToken("type", Type.TYPE) ||
@@ -157,9 +158,7 @@ public class Scanner {
                             checkToken("/", Type.DIVIDE_OP) ||
                             checkRegExp(integerPattern, Type.INTEGER) ||
                             checkRegExp(charPattern, Type.CHAR) ||
-                            checkRegExp(stringPattern, Type.STRING) ||
-                            checkKeywordIdentifier();
-
+                            checkRegExp(stringPattern, Type.STRING);
             if (!isValidToken) {
                 System.out.println("Cannot tokenize at line: " + line + " col: " + col);
                 throw new ScannerError("Cannot tokenize at line: " + line + " col: " + col);
