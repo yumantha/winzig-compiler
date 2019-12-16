@@ -672,31 +672,44 @@ public class Parser {
 
         n += parseFactor();
 
-        while ((currentToken.t_type == Token.Type.PLUS_OP) ||
+        if ((currentToken.t_type == Token.Type.PLUS_OP) ||
                 (currentToken.t_type == Token.Type.MINUS_OP) ||
                 (currentToken.t_type == Token.Type.OR_OP)) {
-            if (currentToken.t_type == Token.Type.PLUS_OP) {
-                readToken(Token.Type.PLUS_OP);
-                n += parseFactor();
-
-                buildTree("+", n);
-                return 1;
-            } else if (currentToken.t_type == Token.Type.MINUS_OP) {
-                readToken(Token.Type.MINUS_OP);
-                n += parseFactor();
-
-                buildTree("-", n);
-                return 1;
-            } else if (currentToken.t_type == Token.Type.OR_OP) {
-                readToken(Token.Type.OR_OP);
-                n += parseFactor();
-
-                buildTree("or", n);
-                return 1;
+            while ((currentToken.t_type == Token.Type.PLUS_OP) ||
+                    (currentToken.t_type == Token.Type.MINUS_OP) ||
+                    (currentToken.t_type == Token.Type.OR_OP)) {
+                parseTermInternal(n);
             }
+            return 1;
+        } else {
+            return n;
         }
 
-        return n;
+
+//        return n;
+    }
+
+    private void parseTermInternal(int n) {
+        if (currentToken.t_type == Token.Type.PLUS_OP) {
+            readToken(Token.Type.PLUS_OP);
+            n += parseFactor();
+
+            buildTree("+", n);
+//            return 1;
+        } else if (currentToken.t_type == Token.Type.MINUS_OP) {
+            readToken(Token.Type.MINUS_OP);
+            n += parseFactor();
+
+            buildTree("-", n);
+//            return 1;
+        } else if (currentToken.t_type == Token.Type.OR_OP) {
+            readToken(Token.Type.OR_OP);
+            n += parseFactor();
+
+            buildTree("or", n);
+//            return 1;
+        }
+//        return 0;
     }
 
     private int parseFactor() {
@@ -704,38 +717,49 @@ public class Parser {
 
         n += parsePrimary();
 
-        while ((currentToken.t_type == Token.Type.MULTIPLY_OP) ||
+        if ((currentToken.t_type == Token.Type.MULTIPLY_OP) ||
                 (currentToken.t_type == Token.Type.DIVIDE_OP) ||
                 (currentToken.t_type == Token.Type.AND_OP) ||
                 (currentToken.t_type == Token.Type.MOD_OP)) {
-            if (currentToken.t_type == Token.Type.MULTIPLY_OP) {
-                readToken(Token.Type.MULTIPLY_OP);
-                n += parsePrimary();
-
-                buildTree("*", n);
-                return 1;
-            } else if (currentToken.t_type == Token.Type.DIVIDE_OP) {
-                readToken(Token.Type.DIVIDE_OP);
-                n += parsePrimary();
-
-                buildTree("/", n);
-                return 1;
-            } else if (currentToken.t_type == Token.Type.AND_OP) {
-                readToken(Token.Type.AND_OP);
-                n += parsePrimary();
-
-                buildTree("and", n);
-                return 1;
-            } else if (currentToken.t_type == Token.Type.MOD_OP) {
-                readToken(Token.Type.MOD_OP);
-                n += parsePrimary();
-
-                buildTree("mod", n);
-                return 1;
+            while ((currentToken.t_type == Token.Type.MULTIPLY_OP) ||
+                    (currentToken.t_type == Token.Type.DIVIDE_OP) ||
+                    (currentToken.t_type == Token.Type.AND_OP) ||
+                    (currentToken.t_type == Token.Type.MOD_OP)) {
+                parseFactorInternal(n);
             }
+            return 1;
+        } else {
+            return n;
         }
 
-        return n;
+    }
+
+    private void parseFactorInternal(int n) {
+        if (currentToken.t_type == Token.Type.MULTIPLY_OP) {
+            readToken(Token.Type.MULTIPLY_OP);
+            n += parsePrimary();
+
+            buildTree("*", n);
+//            return 1;
+        } else if (currentToken.t_type == Token.Type.DIVIDE_OP) {
+            readToken(Token.Type.DIVIDE_OP);
+            n += parsePrimary();
+
+            buildTree("/", n);
+//            return 1;
+        } else if (currentToken.t_type == Token.Type.AND_OP) {
+            readToken(Token.Type.AND_OP);
+            n += parsePrimary();
+
+            buildTree("and", n);
+//            return 1;
+        } else if (currentToken.t_type == Token.Type.MOD_OP) {
+            readToken(Token.Type.MOD_OP);
+            n += parsePrimary();
+
+            buildTree("mod", n);
+//            return 1;
+        }
     }
 
     private int parsePrimary() {
@@ -749,12 +773,12 @@ public class Parser {
 
             if (currentToken.t_type == Token.Type.LPAREN) {
                 readToken(Token.Type.LPAREN);
-                n+=parseExpression();
+                n += parseExpression();
 //                n += 1;
 
                 while (currentToken.t_type == Token.Type.COMMA) {
                     readToken(Token.Type.COMMA);
-                    n+=parseExpression();
+                    n += parseExpression();
 //                    n += 1;
                 }
 
@@ -880,6 +904,7 @@ public class Parser {
     }
 
     private void readToken(Token.Type expType) {
+        System.out.println(currentToken);
         if (currentToken.t_type == expType) {
             if (currentToken.t_type == Token.Type.IDENTIFIER) {
                 buildTree(currentToken.text, 0);
