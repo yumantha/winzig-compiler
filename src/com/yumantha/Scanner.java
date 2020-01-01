@@ -192,7 +192,6 @@ public class Scanner {
         return (whitespaceMatcher.lookingAt());
     }
 
-
     private void skipWhiteSpaces() {
         int i = 0;
 
