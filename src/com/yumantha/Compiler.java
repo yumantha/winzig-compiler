@@ -20,7 +20,7 @@ public class Compiler {
         if (prog != null) {
             prog.inOrderTraverse();
 
-            fileHandler.writeAST(outputPath, prog);
+//            fileHandler.writeAST(outputPath, prog);
         } else {
             throw new ParseError("Parse Error!");
         }

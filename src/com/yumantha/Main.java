@@ -1,28 +1,39 @@
 package com.yumantha;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
+    private static final String usage = "Usage: java -jar winzigc.jar -ast input-file > output-file";
+    private static final String invArgs = "Invalid arguments\nuse -h or --help for help";
 
     public static void main(String[] args) throws IOException {
-        String inputPath = "input/";
-        String outputPath = "output/";
+        List<String> argList = Arrays.asList(args);
 
-        for (int i = 1; i <= 15; i++) {
-            String iStr;
-            if (i < 10) {
-                iStr = "0" + i;
+        String inFile = null;
+        String outFile = null;
+
+        if (argList.size() == 1) {
+            if (argList.contains("-h") || argList.contains("--help")) {
+                System.out.println(usage);
+                System.exit(0);
             } else {
-                iStr = Integer.toString(i);
+                System.out.println(invArgs);
+                System.exit(0);
             }
-
-            String inFile = inputPath + "winzig_" + iStr;
-            String outFile = outputPath + "winzig_" + iStr + ".tree";
-
-            System.out.println(inFile);
-
-            Compiler.compile(inFile, outFile);
-            System.out.println("------------------------------------------------------------");
+        } else if (argList.size() == 2) {
+            if (argList.get(0).equals("-ast")) {
+                inFile = argList.get(1);
+            } else {
+                System.out.println(invArgs);
+                System.exit(0);
+            }
+        } else {
+            System.out.println(invArgs);
+            System.exit(0);
         }
+
+        Compiler.compile(inFile, outFile);
     }
 }
