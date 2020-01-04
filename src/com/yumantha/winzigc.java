@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-public class Main {
+public class winzigc {
     private static final String usage = "Usage: java -jar winzigc.jar -ast input-file > output-file";
     private static final String invArgs = "Invalid arguments\nUse -h or --help for help";
 
