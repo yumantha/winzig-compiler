@@ -1,7 +1,5 @@
 package com.yumantha;
 
-import com.yumantha.errors.ParseError;
-
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -22,7 +20,7 @@ public class Compiler {
 
 //            fileHandler.writeAST(outputPath, prog);
         } else {
-            throw new ParseError("Parse Error!");
+            throw new RuntimeException("Parse Error!");
         }
     }
 }

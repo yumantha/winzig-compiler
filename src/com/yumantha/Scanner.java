@@ -1,7 +1,5 @@
 package com.yumantha;
 
-import com.yumantha.errors.ScannerError;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -160,8 +158,7 @@ public class Scanner {
                             checkRegExp(charPattern, Type.CHAR) ||
                             checkRegExp(stringPattern, Type.STRING);
             if (!isValidToken) {
-                System.out.println("Cannot tokenize at line: " + line + " col: " + col);
-                throw new ScannerError("Cannot tokenize at line: " + line + " col: " + col);
+                throw new RuntimeException("Cannot tokenize at line: " + line + " col: " + col);
             }
 
             skipWhitespacesAndComments();

@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Main {
     private static final String usage = "Usage: java -jar winzigc.jar -ast input-file > output-file";
-    private static final String invArgs = "Invalid arguments\nuse -h or --help for help";
+    private static final String invArgs = "Invalid arguments\nUse -h or --help for help";
 
     public static void main(String[] args) throws IOException {
         List<String> argList = Arrays.asList(args);
@@ -20,18 +20,18 @@ public class Main {
                 System.exit(0);
             } else {
                 System.out.println(invArgs);
-                System.exit(0);
+                System.exit(1);
             }
         } else if (argList.size() == 2) {
             if (argList.get(0).equals("-ast")) {
                 inFile = argList.get(1);
             } else {
                 System.out.println(invArgs);
-                System.exit(0);
+                System.exit(1);
             }
         } else {
             System.out.println(invArgs);
-            System.exit(0);
+            System.exit(1);
         }
 
         Compiler.compile(inFile, outFile);

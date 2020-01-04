@@ -1,7 +1,5 @@
 package com.yumantha;
 
-import com.yumantha.errors.ParseError;
-
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -57,7 +55,7 @@ public class Parser {
 
             buildTree("program", n);
         } else {
-            throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: " + Token.Type.PROG);
+            throw new RuntimeException("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: " + Token.Type.PROG);
         }
     }
 
@@ -105,7 +103,7 @@ public class Parser {
         } else if (currentToken.t_type == Token.Type.IDENTIFIER) {
             return parseName();
         } else {
-            throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: " + Token.Type.INTEGER + ", " + Token.Type.CHAR + " or " + Token.Type.IDENTIFIER);
+            throw new RuntimeException("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: " + Token.Type.INTEGER + ", " + Token.Type.CHAR + " or " + Token.Type.IDENTIFIER);
         }
     }
 
@@ -432,7 +430,7 @@ public class Parser {
             buildTree("string", n);
             return 1;
         } else {
-            throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: "
+            throw new RuntimeException("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: "
                     + Token.Type.MINUS_OP + ", "
                     + Token.Type.PLUS_OP + ", "
                     + Token.Type.NOT_OP + ", "
@@ -536,7 +534,7 @@ public class Parser {
             buildTree("swap", n);
             return 1;
         } else {
-            throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: " + Token.Type.ASSIGN + " or " + Token.Type.SWAP);
+            throw new RuntimeException("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: " + Token.Type.ASSIGN + " or " + Token.Type.SWAP);
         }
     }
 
@@ -803,7 +801,7 @@ public class Parser {
             buildTree("ord", n);
             return 1;
         } else {
-            throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: "
+            throw new RuntimeException("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected: "
                     + Token.Type.MINUS_OP + ", "
                     + Token.Type.PLUS_OP + ", "
                     + Token.Type.NOT_OP + ", "
@@ -852,7 +850,7 @@ public class Parser {
             inputIndex++;
             currentToken = checkFirst();
         } else {
-            throw new ParseError("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected " + expType);
+            throw new RuntimeException("Parse error near line: " + currentToken.line + " col: " + currentToken.col + " \nExpected " + expType);
         }
     }
 
