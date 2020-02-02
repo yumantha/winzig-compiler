@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Compiler {
-    public static void compile(String inputPath, String outputPath) throws IOException {
+    public static void compile(String inputPath) throws IOException {
         FileHandler fileHandler = new FileHandler();
         String sourceCode = fileHandler.readFile(inputPath);
         ArrayList<Token> tokens = Scanner.scan(sourceCode);

@@ -12,7 +12,6 @@ public class winzigc {
         List<String> argList = Arrays.asList(args);
 
         String inFile = null;
-        String outFile = null;
 
         if (argList.size() == 1) {
             if (argList.contains("-h") || argList.contains("--help")) {
@@ -33,7 +32,6 @@ public class winzigc {
             System.out.println(invArgs);
             System.exit(1);
         }
-
-        Compiler.compile(inFile, outFile);
+        Compiler.compile(inFile);
     }
 }
